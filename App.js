@@ -6,15 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDZE3_st-r3Lvt2nwLQrK16xd8Pth-NJy0",
-  authDomain: "strokeai-cf087.firebaseapp.com",
-  projectId: "strokeai-cf087",
-  storageBucket: "strokeai-cf087.appspot.com",
-  messagingSenderId: "280541356221",
-  appId: "1:280541356221:web:4dd279e679c560737fd7d4",
-  measurementId: "G-RNS3GN8V9X"
-};
+import firebaseConfig from './firebaseConfig';
 
 const app = initializeApp(firebaseConfig);
 

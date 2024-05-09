@@ -1,1 +1,11 @@
+const firebaseConfig = {
+  apiKey: "AIzaSyDZE3_st-r3Lvt2nwLQrK16xd8Pth-NJy0",
+  authDomain: "strokeai-cf087.firebaseapp.com",
+  projectId: "strokeai-cf087",
+  storageBucket: "strokeai-cf087.appspot.com",
+  messagingSenderId: "280541356221",
+  appId: "1:280541356221:web:4dd279e679c560737fd7d4",
+  measurementId: "G-RNS3GN8V9X"
+};
 
+export default firebaseConfig;
