@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
+
 import { View, Text, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { initializeApp } from 'firebase/app';
+
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 
 import firebaseConfig from './firebaseConfig';
-
 const app = initializeApp(firebaseConfig);
+
+
 
 const AuthScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
