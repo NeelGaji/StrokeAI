@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, ScrollView } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import { initializeApp } from 'firebase/app';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth';
 
@@ -15,7 +18,26 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
-const AuthScreen = ({ email, setEmail, password, setPassword, isLogin, setIsLogin, handleAuthentication }) => {
+const AuthScreen = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLogin, setIsLogin] = useState(true);
+
+  const handleAuthentication = async () => {
+    const auth = getAuth(app);
+    try {
+      if (isLogin) {
+        await signInWithEmailAndPassword(auth, email, password);
+        console.log('User signed in successfully!');
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+        console.log('User created successfully!');
+      }
+    } catch (error) {
+      console.error('Authentication error:', error.message);
+    }
+  };
+
   return (
     <View style={styles.authContainer}>
        <Text style={styles.title}>{isLogin ? 'Sign In' : 'Sign Up'}</Text>
@@ -47,99 +69,108 @@ const AuthScreen = ({ email, setEmail, password, setPassword, isLogin, setIsLogi
   );
 }
 
-
-const AuthenticatedScreen = ({ user, handleAuthentication }) => {
+const HomeScreen = () => {
   return (
-    <View style={styles.authContainer}>
-      <Text style={styles.title}>Welcome</Text>
-      <Text style={styles.emailText}>{user.email}</Text>
-      <Button title="Logout" onPress={handleAuthentication} color="#e74c3c" />
+    <View style={styles.container}>
+      <Text style={styles.tabText}>Home Screen </Text>
     </View>
   );
-};
+}
+
+const LogoutScreen = ({ navigation }) => {
+  const handleLogout = async () => {
+    const auth = getAuth(app);
+    try {
+      await signOut(auth);
+      console.log('User logged out successfully!');
+    } catch (error) {
+      console.error('Logout error:', error.message);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.tabText}>Logout Screen</Text>
+      <Button title="Logout" onPress={handleLogout} color="#e74c3c" />
+    </View>
+  );
+}
+
+const InfoScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.tabText}>Info Screen</Text>
+      <Text>Some information goes here...</Text>
+    </View>
+  );
+}
+
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+const MainScreen = () => {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Info" component={InfoScreen} />
+      <Tab.Screen name="Logout" component={LogoutScreen} />
+    </Tab.Navigator>
+  );
+}
 
 const App = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null); // Track user authentication state
-  const [isLogin, setIsLogin] = useState(true);
+  const [user, setUser] = useState(null);
 
-  const auth = getAuth(app);
   useEffect(() => {
+    const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
     });
 
     return () => unsubscribe();
-  }, [auth]);
-
-  
-  const handleAuthentication = async () => {
-    try {
-      if (user) {
-        // If user is already authenticated, log out
-        console.log('User logged out successfully!');
-        await signOut(auth);
-      } else {
-        // Sign in or sign up
-        if (isLogin) {
-          // Sign in
-          await signInWithEmailAndPassword(auth, email, password);
-          console.log('User signed in successfully!');
-        } else {
-          // Sign up
-          await createUserWithEmailAndPassword(auth, email, password);
-          console.log('User created successfully!');
-        }
-      }
-    } catch (error) {
-      console.error('Authentication error:', error.message);
-    }
-  };
+  }, []);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {user ? (
-        // Show user's email if user is authenticated
-        <AuthenticatedScreen user={user} handleAuthentication={handleAuthentication} />
-      ) : (
-        // Show sign-in or sign-up form if user is not authenticated
-        <AuthScreen
-          email={email}
-          setEmail={setEmail}
-          password={password}
-          setPassword={setPassword}
-          isLogin={isLogin}
-          setIsLogin={setIsLogin}
-          handleAuthentication={handleAuthentication}
-        />
-      )}
-    </ScrollView>
+    <NavigationContainer>
+      <Stack.Navigator>
+        {user ? (
+          <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false }} />
+        ) : (
+          <Stack.Screen
+            name="Auth"
+            component={AuthScreen}
+            options={{ title: 'Authentication' }}
+          />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
     backgroundColor: '#f0f0f0',
   },
   authContainer: {
-    width: '80%',
-    maxWidth: 400,
-    backgroundColor: '#fff',
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 16,
+    backgroundColor: '#fff',
     borderRadius: 8,
     elevation: 3,
   },
   title: {
     fontSize: 24,
     marginBottom: 16,
-    textAlign: 'center',
   },
   input: {
     height: 40,
+    width: '80%',
     borderColor: '#ddd',
     borderWidth: 1,
     marginBottom: 16,
@@ -153,14 +184,9 @@ const styles = StyleSheet.create({
     color: '#3498db',
     textAlign: 'center',
   },
-  bottomContainer: {
-    marginTop: 20,
-  },
-  emailText: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
+  tabText: {
+    fontSize: 24,
+  }
 });
 
 export default App;
