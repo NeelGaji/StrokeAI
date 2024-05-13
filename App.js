@@ -29,7 +29,7 @@ import HomeScreen from "./src/Screens/HomeScreen";
 import HistoryScreen from "./src/Screens/HistoryScreen";
 import ResourcesScreen from "./src/Screens/ResourcesScreen";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyDZE3_st-r3Lvt2nwLQrK16xd8Pth-NJy0",
   authDomain: "strokeai-cf087.firebaseapp.com",
   projectId: "strokeai-cf087",
