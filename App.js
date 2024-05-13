@@ -25,9 +25,14 @@ import {
 import { collection, addDoc, getFirestore } from "firebase/firestore";
 import {getDatabase} from 'firebase/database'; 
 
+
+
 import HomeScreen from "./src/Screens/HomeScreen";
 import HistoryScreen from "./src/Screens/HistoryScreen";
 import ResourcesScreen from "./src/Screens/ResourcesScreen";
+import ProfileScreen from "./src/Screens/ProfileScreen";
+import ShowHistory from "./src/Screens/ShowHistory";
+
 
 export const firebaseConfig = {
   apiKey: "AIzaSyDZE3_st-r3Lvt2nwLQrK16xd8Pth-NJy0",
@@ -109,62 +114,21 @@ const AuthScreen = ({ navigation }) => {
   );
 };
 
-const ProfileScreen = ({ navigation }) => {
-  const handleLogout = async () => {
-    const auth = getAuth(app);
-    try {
-      await signOut(auth);
-      console.log("User logged out successfully!");
-    } catch (error) {
-      console.error("Logout error:", error.message);
-    }
-  };
-  const test = {
-    name: 'Kunjall',
-    age: 22
-  }
 
-  const add = async () => {
-    try {
-      const createdBy = getAuth().currentUser.uid
-      // console.log(createdBy);
-      await addDoc(collection(db, "users"), {
-        name: test.name,
-        age: test.age,
-        createdBy
-      });
-      console.log("Document added successfully!");
-    } catch (error) {
-      console.error("Error adding document: ", error);
-    }
-  }
-  
-  const bring = async () =>{
-    try{
-      // console.log(currentUser)
-      const user_id = getAuth().currentUser.uid;
-      const namr = getAuth().currentUser.name;
-      console.log(getAuth().currentUser);
-       
-    }
-    catch(error){
-      console.log(error);
-    }
-  }
-  return (
-    <View style={styles.container}>
-      <Text style={styles.tabText}>Logout Screen</Text>
-      <Button title="Logout" onPress={handleLogout} color="#e74c3c" />
-      <Button title="add" onPress={add} color="#444" />
-      <Button title="bring" onPress={bring} color="#444" />
-
-      
-    </View>
-  );
-};
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+const HistoryStack = createStackNavigator();
+
+const HistoryStackNavigator = () => {
+  return (
+    <HistoryStack.Navigator>
+      <HistoryStack.Screen name="History" component={HistoryScreen} />
+      <HistoryStack.Screen name="Details" component={ShowHistory} />
+    </HistoryStack.Navigator>
+  );
+};
 
 const MainScreen = () => {
   return (
@@ -182,7 +146,7 @@ const MainScreen = () => {
 
       <Tab.Screen
         name="History"
-        component={HistoryScreen}
+        component={HistoryStackNavigator}
         options={{
           tabBarLabel: "History",
           tabBarIcon: ({ color }) => (
@@ -190,12 +154,12 @@ const MainScreen = () => {
           ),
         }}
       />
-
+      
       <Tab.Screen
         name="Educational Resources"
         component={ResourcesScreen}
         options={{
-          tabBarLabel: "Resouces",
+          tabBarLabel: "Resources",
           tabBarIcon: ({ color }) => (
             <FontAwesome size={28} name="book" color={color} />
           ),
@@ -245,7 +209,7 @@ const App = () => {
           />
         )}
       </Stack.Navigator>
-    </NavigationContainer>
+    </NavigationContainer>    
   );
 };
 

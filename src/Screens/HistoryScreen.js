@@ -1,7 +1,14 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-const HistoryScreen = () => {
+import { useNavigation } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from "@react-navigation/stack";
+
+
+const HistoryScreen = ({ navigation }) => {
+	// const navigation = useNavigation();
+
   // Get the model result from the Django server
   const modelResult = "No"; 
 
@@ -15,12 +22,14 @@ const HistoryScreen = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.cardContainer, { backgroundColor: cardColor }]}>
-        <Text style={styles.heading}>Prediction</Text>
-        <Text style={styles.paragraph}>{modelResult}</Text>
-      </View>
-    </View>
+	<TouchableOpacity onPress={() => navigation.navigate('Details')}>
+		<View style={styles.container} >
+		<View style={[styles.cardContainer, { backgroundColor: cardColor }]}>
+			<Text style={styles.heading}>Prediction</Text>
+			<Text style={styles.paragraph}>{modelResult}</Text>
+		</View>
+		</View>
+	</TouchableOpacity>
   );
 };
 

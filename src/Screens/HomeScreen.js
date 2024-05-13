@@ -164,7 +164,10 @@ const HomeScreen = () => {
     />
     </View>
     <View style={{ marginTop: 20 }}>
-        <Button title="Submit"  onPress={add}/>
+        <Button 
+        title="Submit"  
+        
+        onPress={add}/>
       </View>
     </ScrollView>
   )
