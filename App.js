@@ -13,6 +13,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator } from "@react-navigation/stack";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+
 import { initializeApp } from "firebase/app";
 import {
   getAuth,
@@ -21,6 +22,8 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
+import { collection, addDoc, getFirestore } from "firebase/firestore";
+import {getDatabase} from 'firebase/database'; 
 
 import HomeScreen from "./src/Screens/HomeScreen";
 import HistoryScreen from "./src/Screens/HistoryScreen";
@@ -38,12 +41,22 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 
+// const databaseURL = 'https://strokeai-cf087-default-rtdb.firebaseio.com/';
+const db = getFirestore();
+
+
 const AuthScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLogin, setIsLogin] = useState(true);
 
   const handleAuthentication = async () => {
+
+    // const docRef = await addDoc(collection(db, "users"), {
+    //   email: email,
+    //   // Other user details
+    // });
+
     const auth = getAuth(app);
     try {
       if (isLogin) {
@@ -57,6 +70,7 @@ const AuthScreen = ({ navigation }) => {
       console.error("Authentication error:", error.message);
     }
   };
+
 
   return (
     <View style={styles.authContainer}>
@@ -105,11 +119,46 @@ const ProfileScreen = ({ navigation }) => {
       console.error("Logout error:", error.message);
     }
   };
+  const test = {
+    name: 'Kunjall',
+    age: 22
+  }
 
+  const add = async () => {
+    try {
+      const createdBy = getAuth().currentUser.uid
+      // console.log(createdBy);
+      await addDoc(collection(db, "users"), {
+        name: test.name,
+        age: test.age,
+        createdBy
+      });
+      console.log("Document added successfully!");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  }
+  
+  const bring = async () =>{
+    try{
+      // console.log(currentUser)
+      const user_id = getAuth().currentUser.uid;
+      const namr = getAuth().currentUser.name;
+      console.log(getAuth().currentUser);
+       
+    }
+    catch(error){
+      console.log(error);
+    }
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.tabText}>Logout Screen</Text>
       <Button title="Logout" onPress={handleLogout} color="#e74c3c" />
+      <Button title="add" onPress={add} color="#444" />
+      <Button title="bring" onPress={bring} color="#444" />
+
+      
     </View>
   );
 };
@@ -143,7 +192,7 @@ const MainScreen = () => {
       />
 
       <Tab.Screen
-        name="Resouces"
+        name="Educational Resources"
         component={ResourcesScreen}
         options={{
           tabBarLabel: "Resouces",
