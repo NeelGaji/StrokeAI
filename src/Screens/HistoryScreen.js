@@ -1,17 +1,49 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-import { useNavigation } from '@react-navigation/native';
-import { NavigationContainer } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
+import {
+  addDoc,
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+
+const db = getFirestore();
 
 const HistoryScreen = ({ navigation }) => {
-	// const navigation = useNavigation();
+  const [records, setRecords] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const userRef = collection(db, "users");
+      const userId = getAuth().currentUser.uid;
+
+      const q = query(userRef, where("createdBy", "==", userId));
+      const querySnapshot = await getDocs(q);
+
+      const fetchedRecords = [];
+      let index = 0;
+      querySnapshot.forEach((doc) => {
+        const modelResult = index % 2 === 0 ? "Yes" : "No";
+        fetchedRecords.push({ id: doc.id, ...doc.data(), modelResult });
+        index++;
+      });
+
+      setRecords(fetchedRecords);
+    };
+    fetchData();
+  }, []);
+  // const navigation = useNavigation();
 
   // Get the model result from the Django server
-  const modelResult = "No"; 
-
+  const modelResult = "Yes";
 
   let cardColor = "#FFFFFF"; // Default color
   // Change the color based on the model result
@@ -22,14 +54,28 @@ const HistoryScreen = ({ navigation }) => {
   }
 
   return (
-	<TouchableOpacity onPress={() => navigation.navigate('Details')}>
-		<View style={styles.container} >
-		<View style={[styles.cardContainer, { backgroundColor: cardColor }]}>
-			<Text style={styles.heading}>Prediction</Text>
-			<Text style={styles.paragraph}>{modelResult}</Text>
-		</View>
-		</View>
-	</TouchableOpacity>
+    <View style={styles.container}>
+      {records &&
+        records.map((record) => (
+          <TouchableOpacity
+            key={record.id}
+            style={[
+              styles.cardContainer,
+              {
+                backgroundColor: record.modelResult === "Yes" ? "red" : "green",
+              },
+            ]}
+            onPress={() =>
+              navigation.navigate("Details", { recordId: record.id })
+            }
+          >
+            <View>
+              <Text style={styles.heading}>Stroke</Text>
+              <Text style={styles.paragraph}>{record.modelResult}</Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+    </View>
   );
 };
 
@@ -64,7 +110,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     lineHeight: 23,
     paddingRight: 20,
-	color:"white",
+    color: "white",
   },
 });
 
