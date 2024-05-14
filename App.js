@@ -146,7 +146,8 @@ const MainScreen = () => {
 
       <Tab.Screen
         name="History"
-        component={HistoryStackNavigator}
+        component={HistoryScreen} 
+        // here
         options={{
           tabBarLabel: "History",
           tabBarIcon: ({ color }) => (
@@ -209,6 +210,7 @@ const App = () => {
           />
         )}
       </Stack.Navigator>
+      <Stack.Screen name="Details" component={ShowHistory} />
     </NavigationContainer>    
   );
 };
