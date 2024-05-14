@@ -5,7 +5,7 @@ import { SelectList } from 'react-native-dropdown-select-list'
 
 import {
   getAuth} from "firebase/auth";
-import { collection, addDoc, getFirestore } from "firebase/firestore";
+import { collection, addDoc, getFirestore, Timestamp } from "firebase/firestore";
 
 import { initializeApp } from "firebase/app";
 export const firebaseConfig = {
@@ -35,6 +35,7 @@ const HomeScreen = () => {
   const [work, setWork] = useState(null);
   const [smoke, setSmoke] = useState(null);
 
+  //yet to be made  - vashisht
   useEffect(() => {
     // Check if the user is signed in
     const user = getAuth().currentUser;
@@ -48,8 +49,9 @@ const HomeScreen = () => {
   const add = async () => {
     try {
       // console.log(getAuth().currentUser);
-      const createdBy = getAuth().currentUser.uid
-      const email = getAuth().currentUser.email
+      const createdBy = getAuth().currentUser.uid;
+      const email = getAuth().currentUser.email;
+      const currentDate = new Date();
       await addDoc(collection(db, "users"), {
         gender,
         createdBy,
@@ -63,6 +65,7 @@ const HomeScreen = () => {
         bmi,
         work,
         smoke,
+        currentDate: currentDate.toISOString(),
       });
       console.log(gender);
       console.log("Document added successfully!");

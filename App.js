@@ -146,7 +146,7 @@ const MainScreen = () => {
 
       <Tab.Screen
         name="History"
-        component={HistoryScreen} 
+        component={HistoryStackNavigator} 
         // here
         options={{
           tabBarLabel: "History",
